@@ -7,6 +7,7 @@ import com.scarlxrd.ecommerce.contracts.auth.request.RegisterRequest;
 import com.scarlxrd.ecommerce.contracts.auth.response.TokenResponse;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -52,5 +53,19 @@ public class AuthResource {
         authService.logout(authorizationHeader);
 
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/me")
+    @Authenticated
+    public Response me() {
+        return Response.ok("authenticated").build();
+    }
+
+    @GET
+    @Path("/admin-test")
+    @RolesAllowed("ADMIN")
+    public Response adminTest() {
+        return Response.ok("admin").build();
     }
 }
