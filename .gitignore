@@ -1,0 +1,28 @@
+# Gradle
+.gradle/
+**/build/
+**/bin/
+
+# IntelliJ
+.idea/
+*.iml
+**/.idea/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Quarkus
+.quarkus/
+
+# Local database / volumes
+data/
