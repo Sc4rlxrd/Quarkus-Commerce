@@ -26,3 +26,5 @@
 
 # Local database / volumes
 data/
+
+**/privateKey.pem
