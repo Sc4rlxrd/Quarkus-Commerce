@@ -10,4 +10,10 @@ java {
 
 dependencies {
     api project(':contracts:common-contracts')
+
+    api platform(
+            "${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"
+    )
+
+    api 'jakarta.validation:jakarta.validation-api'
 }
