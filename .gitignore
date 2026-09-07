@@ -28,3 +28,4 @@
 data/
 
 **/privateKey.pem
+**/publicKey.pem
