@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -15,18 +17,23 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     public UUID id;
 
-    @Column(nullable = false, length = 120)
+    @Column(nullable = false)
     public String name;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true)
     public String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
     public String passwordHash;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    public UserRole role;
+    @Column(name = "role", nullable = false)
+    public Set<UserRole> roles = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     public OffsetDateTime createdAt;
