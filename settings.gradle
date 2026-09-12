@@ -24,3 +24,4 @@ include 'contracts:common-contracts'
 include 'contracts:auth-contracts'
 
 include 'services:auth-service'
+include 'services:gateway-service'
