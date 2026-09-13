@@ -16,6 +16,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-arc'
 
     implementation project(':contracts:auth-contracts')
+    implementation project(':contracts:product-contracts')
 
     testImplementation 'io.quarkus:quarkus-junit'
 }
