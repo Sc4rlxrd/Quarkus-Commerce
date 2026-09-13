@@ -1,4 +1,10 @@
 package com.scarlxrd.ecommerce.contracts.product.event;
 
-public record ProductValidationRequest() {
+import java.util.UUID;
+
+public record ProductValidationRequest(
+        UUID orderId,
+        UUID productId,
+        int quantity
+) {
 }
