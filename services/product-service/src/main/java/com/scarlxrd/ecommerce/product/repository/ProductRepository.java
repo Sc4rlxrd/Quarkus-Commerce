@@ -4,6 +4,7 @@ import com.scarlxrd.ecommerce.product.entity.ProductEntity;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,5 +23,9 @@ public class ProductRepository implements PanacheRepositoryBase<ProductEntity, U
     public Optional<ProductEntity> findActiveById(UUID id) {
         return find("id = ?1 and active = true", id)
                 .firstResultOptional();
+    }
+
+    public List<ProductEntity> findAllActive() {
+        return list("active = true");
     }
 }
