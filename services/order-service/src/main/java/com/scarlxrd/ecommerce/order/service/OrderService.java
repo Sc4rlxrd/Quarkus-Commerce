@@ -9,6 +9,8 @@ import com.scarlxrd.ecommerce.contracts.order.response.OrderResponse;
 import com.scarlxrd.ecommerce.order.entity.OrderEntity;
 import com.scarlxrd.ecommerce.order.entity.OrderItemEntity;
 import com.scarlxrd.ecommerce.order.entity.OrderStatus;
+import com.scarlxrd.ecommerce.order.exception.DuplicateProductException;
+import com.scarlxrd.ecommerce.order.exception.OrderEventSerializationException;
 import com.scarlxrd.ecommerce.order.mapper.OrderMapper;
 import com.scarlxrd.ecommerce.order.outbox.OutboxEvent;
 import com.scarlxrd.ecommerce.order.outbox.OutboxRepository;
@@ -104,9 +106,13 @@ public class OrderService {
     private String serialize(Object event) {
         try {
             return objectMapper.writeValueAsString(event);
+
         } catch (
                 JsonProcessingException exception) {
-            throw new IllegalStateException("Failed to serialize outbox event", exception);
+
+            log.error("Failed to serialize order outbox event", exception);
+
+            throw new OrderEventSerializationException("Failed to serialize order outbox event", exception);
         }
     }
 
@@ -116,9 +122,10 @@ public class OrderService {
         for (OrderItemRequest item : request.items()) {
 
             if (!productIds.add(item.productId())) {
+
                 log.warnf("Order creation rejected because product is duplicated productId=%s", item.productId());
 
-                throw new IllegalArgumentException("Duplicate product in order: " + item.productId());
+                throw new DuplicateProductException(item.productId());
             }
         }
     }
