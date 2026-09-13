@@ -92,6 +92,55 @@
       "name": "product.validated.queue",
       "vhost": "/",
       "durable": true
+    },
+
+    {
+      "name": "inventory.reservation.queue",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-dead-letter-exchange": "commerce.events",
+        "x-dead-letter-routing-key": "inventory.reservation.retry.1"
+      }
+    },
+
+    {
+      "name": "inventory.reservation.queue.retry.1",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-message-ttl": 5000,
+        "x-dead-letter-exchange": "commerce.events",
+        "x-dead-letter-routing-key": "inventory.reservation.retry.2"
+      }
+    },
+
+    {
+      "name": "inventory.reservation.queue.retry.2",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-message-ttl": 10000,
+        "x-dead-letter-exchange": "commerce.events",
+        "x-dead-letter-routing-key": "inventory.reservation.retry.3"
+      }
+    },
+
+    {
+      "name": "inventory.reservation.queue.retry.3",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-message-ttl": 30000,
+        "x-dead-letter-exchange": "commerce.events.dlx",
+        "x-dead-letter-routing-key": "inventory.reservation.dlq"
+      }
+    },
+
+    {
+      "name": "inventory.reservation.queue.dlq",
+      "vhost": "/",
+      "durable": true
     }
   ],
 
@@ -142,6 +191,46 @@
       "destination": "product.validated.queue",
       "destination_type": "queue",
       "routing_key": "product.validated"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "inventory.reservation.queue",
+      "destination_type": "queue",
+      "routing_key": "inventory.reservation.requested"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "inventory.reservation.queue.retry.1",
+      "destination_type": "queue",
+      "routing_key": "inventory.reservation.retry.1"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "inventory.reservation.queue.retry.2",
+      "destination_type": "queue",
+      "routing_key": "inventory.reservation.retry.2"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "inventory.reservation.queue.retry.3",
+      "destination_type": "queue",
+      "routing_key": "inventory.reservation.retry.3"
+    },
+
+    {
+      "source": "commerce.events.dlx",
+      "vhost": "/",
+      "destination": "inventory.reservation.queue.dlq",
+      "destination_type": "queue",
+      "routing_key": "inventory.reservation.dlq"
     }
   ]
 }
