@@ -1,4 +1,4 @@
-package com.scarlxrd.ecommerce.auth.config.security;
+package com.scarlxrd.ecommerce.auth.config;
 
 import com.scarlxrd.ecommerce.auth.entity.UserEntity;
 import com.scarlxrd.ecommerce.auth.enums.UserRole;
