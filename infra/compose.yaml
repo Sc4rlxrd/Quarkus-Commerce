@@ -36,6 +36,59 @@ services:
       timeout: 5s
       retries: 10
 
+  product-db:
+    image: postgres:17-alpine
+    container_name: quarkus-commerce-product-db
+    environment:
+      POSTGRES_DB: product_db
+      POSTGRES_USER: product_user
+      POSTGRES_PASSWORD: product_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U product_user -d product_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: quarkus-commerce-rabbitmq
+
+    ports:
+      - "5672:5672"     # RabbitMQ
+      - "15672:15672"   # Management UI
+      - "15692:15692"   # Prometheus metrics
+
+    environment:
+      RABBITMQ_DEFAULT_USER: commerce_user
+      RABBITMQ_DEFAULT_PASS: commerce_password
+
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+
+    configs:
+      - source: rabbitmq_config
+        target: /etc/rabbitmq/rabbitmq.conf
+
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+configs:
+  rabbitmq_config:
+    content: |
+      load_definitions = /etc/rabbitmq/definitions.json
+
 volumes:
   auth-postgres-data:
   redis-data:
+  product-db-data:
+  rabbitmq-data:

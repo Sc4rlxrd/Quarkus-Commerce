@@ -1,0 +1,147 @@
+{
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+
+  "users": [
+    {
+      "name": "commerce_user",
+      "password": "commerce_password",
+      "tags": "administrator"
+    }
+  ],
+
+  "permissions": [
+    {
+      "user": "commerce_user",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+
+  "exchanges": [
+    {
+      "name": "commerce.events",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true
+    },
+    {
+      "name": "commerce.events.dlx",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true
+    }
+  ],
+
+  "queues": [
+    {
+      "name": "product.validation.queue",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-dead-letter-exchange": "commerce.events",
+        "x-dead-letter-routing-key": "product.validation.retry.1"
+      }
+    },
+
+    {
+      "name": "product.validation.queue.retry.1",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-message-ttl": 5000,
+        "x-dead-letter-exchange": "commerce.events",
+        "x-dead-letter-routing-key": "product.validation.retry.2"
+      }
+    },
+
+    {
+      "name": "product.validation.queue.retry.2",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-message-ttl": 10000,
+        "x-dead-letter-exchange": "commerce.events",
+        "x-dead-letter-routing-key": "product.validation.retry.3"
+      }
+    },
+
+    {
+      "name": "product.validation.queue.retry.3",
+      "vhost": "/",
+      "durable": true,
+      "arguments": {
+        "x-message-ttl": 30000,
+        "x-dead-letter-exchange": "commerce.events.dlx",
+        "x-dead-letter-routing-key": "product.validation.dlq"
+      }
+    },
+
+    {
+      "name": "product.validation.queue.dlq",
+      "vhost": "/",
+      "durable": true
+    },
+
+    {
+      "name": "product.validated.queue",
+      "vhost": "/",
+      "durable": true
+    }
+  ],
+
+  "bindings": [
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "product.validation.queue",
+      "destination_type": "queue",
+      "routing_key": "product.validation.requested"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "product.validation.queue.retry.1",
+      "destination_type": "queue",
+      "routing_key": "product.validation.retry.1"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "product.validation.queue.retry.2",
+      "destination_type": "queue",
+      "routing_key": "product.validation.retry.2"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "product.validation.queue.retry.3",
+      "destination_type": "queue",
+      "routing_key": "product.validation.retry.3"
+    },
+
+    {
+      "source": "commerce.events.dlx",
+      "vhost": "/",
+      "destination": "product.validation.queue.dlq",
+      "destination_type": "queue",
+      "routing_key": "product.validation.dlq"
+    },
+
+    {
+      "source": "commerce.events",
+      "vhost": "/",
+      "destination": "product.validated.queue",
+      "destination_type": "queue",
+      "routing_key": "product.validated"
+    }
+  ]
+}
